@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Game</title>
+    <style>
+        /* Chessboard CSS */
+        #board {
+            width: 400px; /* Adjust width as needed */
+            height: 400px;
+            margin-top: 20px;
+            border: 2px solid #333; /* Board border */
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* Ensure 8 columns */
+            grid-template-rows: repeat(8, 1fr); /* Ensure 8 rows */
+        }
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+        }
+        .dark {
+            background-color: green; /* Dark square color */
+        }
+        .light {
+            background-color: #38b277; /* Light square color */
+        }
+        .highlight {
+            background-color: yellow !important;
+        }
+        .piece-white {
+            color: whitesmoke; /* White pieces color */
+        }
+        .piece-black {
+            color: black; /* Black pieces color */
+        }
+        .pawn-white {
+            color: white; /* Full red */
+        }
+        .pawn-black {
+            color: black; /* Full white */
+        }
+        .rook-white, .queen-white {
+            color: white; /* Adjust other white pieces as needed */
+        }
+        .rook-black, .queen-black {
+            color: black; /* Adjust other black pieces as needed */
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <h1>Chess Game</h1>
+
+    <div id="board"></div>
+
+    <form action="{% url 'restart_game' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" id="restartButton">Restart Game</button>
+    </form>
+
+    <form action="{% url 'move_white' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">White Move</button>
+    </form>
+    <form action="{% url 'move_black' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Black Move</button>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var board = document.getElementById('board');
+            var initialFen = '{{ game.initial_fen }}'; // Replace with initial FEN if available
+            var currentFen = '{{ game.fen }}'; // Current game FEN
+            var move = '{{ move }}'; // Last move in UCI format
+    
+            function setupBoard(fen, move) {
+                board.innerHTML = ''; // Clear existing board
+    
+                var pieces = {
+                    'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+                    'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+                };
+    
+                var rows = fen.split(' ')[0].split('/');
+                for (var rank = 0; rank < 8; rank++) {
+                    var row = rows[rank];
+                    var fileIndex = 0;
+                    for (var i = 0; i < row.length; i++) {
+                        var square;
+                        if (isNaN(row[i])) {
+                            square = document.createElement('div');
+                            square.className = 'square ' + ((rank + fileIndex) % 2 === 0 ? 'light' : 'dark');
+                            var piece = pieces[row[i]];
+                            square.textContent = piece;
+                            if (piece) {
+                                if (piece === '♟') {
+                                    square.classList.add('pawn-black');
+                                } else if (piece === '♙') {
+                                    square.classList.add('pawn-white');
+                                } else if (piece === '♜' || piece === '♖') {
+                                    square.classList.add('rook-black', 'piece-black');
+                                } else if (piece === '♞' || piece === '♘') {
+                                    square.classList.add('knight-black', 'piece-black');
+                                } else if (piece === '♝' || piece === '♗') {
+                                    square.classList.add('bishop-black', 'piece-black');
+                                } else if (piece === '♛' || piece === '♕') {
+                                    square.classList.add('queen-black', 'piece-black');
+                                } else if (piece === '♚' || piece === '♔') {
+                                    square.classList.add('king-black', 'piece-black');
+                                }
+                            }
+                            board.appendChild(square);
+                            fileIndex++;
+                        } else {
+                            var emptySquares = parseInt(row[i]);
+                            for (var j = 0; j < emptySquares; j++) {
+                                square = document.createElement('div');
+                                square.className = 'square ' + ((rank + fileIndex) % 2 === 0 ? 'light' : 'dark');
+                                board.appendChild(square);
+                                fileIndex++;
+                            }
+                        }
+                    }
+                }
+    
+                if (move) {
+                    highlightMove(move);
+                }
+            }
+    
+            function highlightMove(move) {
+                var start = move.slice(0, 2);
+                var end = move.slice(2, 4);
+                var startSquare = board.querySelector(`[data-square="${start}"]`);
+                var endSquare = board.querySelector(`[data-square="${end}"]`);
+    
+                if (startSquare) {
+                    startSquare.classList.add('highlight');
+                }
+                if (endSquare) {
+                    endSquare.classList.add('highlight');
+                }
+            }
+    
+            // Initialize board with current FEN and highlight last move
+            setupBoard(currentFen, move);
+    
+            // Restart button functionality
+            var restartButton = document.getElementById('restartButton');
+            restartButton.addEventListener('click', function() {
+                setupBoard(initialFen, null); // Reset board to initial state
+            });
+        });
+    </script>
+    
+</body>
+</html>
