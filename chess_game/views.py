@@ -23,6 +23,6 @@ def move_black(request):
     move = game.move_black()
     return render(request, 'chess_game/index.html', {'game': game, 'move': move})
 def restart_game(request):
-    game = ChessGame.objects.first()  # Assuming you have a single game instance
+    game = ChessGame.objects.first()  
     game.restart_game()
-    return redirect('index')  # Redirect to the main game view
+    return redirect('index')  
