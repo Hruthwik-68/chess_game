@@ -3,15 +3,15 @@
 <head>
     <title>Chess Game</title>
     <style>
-        /* Chessboard CSS */
+     
         #board {
-            width: 400px; /* Adjust width as needed */
+            width: 400px;
             height: 400px;
             margin-top: 20px;
-            border: 2px solid #333; /* Board border */
+            border: 2px solid #333;
             display: grid;
-            grid-template-columns: repeat(8, 1fr); /* Ensure 8 columns */
-            grid-template-rows: repeat(8, 1fr); /* Ensure 8 rows */
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
         }
         .square {
             display: flex;
@@ -22,31 +22,19 @@
             border: 1px solid #ccc;
         }
         .dark {
-            background-color: green; /* Dark square color */
+            background-color: green;
         }
         .light {
-            background-color: #38b277; /* Light square color */
+            background-color: #38b277;
         }
         .highlight {
             background-color: yellow !important;
         }
         .piece-white {
-            color: whitesmoke; /* White pieces color */
+            color: whitesmoke;
         }
         .piece-black {
-            color: black; /* Black pieces color */
-        }
-        .pawn-white {
-            color: white; /* Full red */
-        }
-        .pawn-black {
-            color: black; /* Full white */
-        }
-        .rook-white, .queen-white {
-            color: white; /* Adjust other white pieces as needed */
-        }
-        .rook-black, .queen-black {
-            color: black; /* Adjust other black pieces as needed */
+            color: black;
         }
         button {
             margin-top: 10px;
@@ -55,8 +43,6 @@
             cursor: pointer;
         }
     </style>
-    
-    
 </head>
 <body>
     <h1>Chess Game</h1>
@@ -70,21 +56,21 @@
 
     <form action="{% url 'move_white' %}" method="post">
         {% csrf_token %}
-        <button type="submit">White Move</button>
+        <button type="submit">Move</button>
     </form>
-    <form action="{% url 'move_black' %}" method="post">
+    {% comment %} <form action="{% url 'move_black' %}" method="post">
         {% csrf_token %}
         <button type="submit">Black Move</button>
-    </form>
+    </form> {% endcomment %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var board = document.getElementById('board');
-            var initialFen = '{{ game.initial_fen }}'; // Replace with initial FEN if available
-            var currentFen = '{{ game.fen }}'; // Current game FEN
-            var move = '{{ move }}'; // Last move in UCI format
+            var initialFen = '{{ game.initial_fen }}'; 
+            var currentFen = '{{ game.fen }}';
+            var move = '{{ move }}'; 
     
             function setupBoard(fen, move) {
-                board.innerHTML = ''; // Clear existing board
+                board.innerHTML = ''; 
     
                 var pieces = {
                     'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
@@ -103,20 +89,10 @@
                             var piece = pieces[row[i]];
                             square.textContent = piece;
                             if (piece) {
-                                if (piece === '♟') {
-                                    square.classList.add('pawn-black');
-                                } else if (piece === '♙') {
-                                    square.classList.add('pawn-white');
-                                } else if (piece === '♜' || piece === '♖') {
-                                    square.classList.add('rook-black', 'piece-black');
-                                } else if (piece === '♞' || piece === '♘') {
-                                    square.classList.add('knight-black', 'piece-black');
-                                } else if (piece === '♝' || piece === '♗') {
-                                    square.classList.add('bishop-black', 'piece-black');
-                                } else if (piece === '♛' || piece === '♕') {
-                                    square.classList.add('queen-black', 'piece-black');
-                                } else if (piece === '♚' || piece === '♔') {
-                                    square.classList.add('king-black', 'piece-black');
+                                if (row[i] === row[i].toUpperCase()) {
+                                    square.classList.add('piece-white');
+                                } else {
+                                    square.classList.add('piece-black');
                                 }
                             }
                             board.appendChild(square);
@@ -152,16 +128,13 @@
                 }
             }
     
-            // Initialize board with current FEN and highlight last move
             setupBoard(currentFen, move);
     
-            // Restart button functionality
             var restartButton = document.getElementById('restartButton');
             restartButton.addEventListener('click', function() {
-                setupBoard(initialFen, null); // Reset board to initial state
+                setupBoard(initialFen, null); 
             });
         });
     </script>
-    
 </body>
 </html>
