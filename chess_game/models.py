@@ -8,7 +8,7 @@ class ChessGame(models.Model):
 
     def move_white(self):
         board = chess.Board(self.fen)
-        engine_path = r'C:\Users\gowth\Downloads\stockfish-windows-x86-64-avx2\stockfish\stockfish-windows-x86-64-avx2.exe'
+        engine_path = r'C:\Users\POOJA\Downloads\stockfish-windows-x86-64-avx2\stockfish\stockfish-windows-x86-64-avx2.exe'
         engine = chess.engine.SimpleEngine.popen_uci(engine_path)
         result = engine.play(board, chess.engine.Limit(time=0.1))
         move = result.move
@@ -20,7 +20,7 @@ class ChessGame(models.Model):
 
     def move_black(self):
         board = chess.Board(self.fen)
-        engine_path = r'C:\Users\gowth\Downloads\stockfish-windows-x86-64-avx2\stockfish\stockfish-windows-x86-64-avx2.exe'
+        engine_path = r'C:\Users\POOJA\Downloads\stockfish-windows-x86-64-avx2\stockfish\stockfish-windows-x86-64-avx2.exe'
         engine = chess.engine.SimpleEngine.popen_uci(engine_path)
         result = engine.play(board, chess.engine.Limit(time=0.1))
         move = result.move
